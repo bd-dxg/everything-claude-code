@@ -3,44 +3,44 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm run dev|pnpm( run)? dev|yarn dev|bun run dev)\"",
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"(pnpm dev|npm run dev)\"",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"console.error('[Hook] BLOCKED: Dev server must run in tmux for log access');console.error('[Hook] Use: tmux new-session -d -s dev \\\"npm run dev\\\"');console.error('[Hook] Then: tmux attach -t dev');process.exit(1)\""
+            "command": "node -e \"console.error('[Hook] 开发服务器启动中...');console.error('[Hook] 提示: 在新终端窗口中运行此命令，以便同时查看日志和继续操作')\""
           }
         ],
-        "description": "Block dev servers outside tmux - ensures you can access logs"
+        "description": "提醒在新终端窗口启动开发服务器，确保日志可访问"
       },
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm (install|test)|pnpm (install|test)|yarn (install|test)?|bun (install|test)|cargo build|make|docker|pytest|vitest|playwright)\"",
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"(pnpm (install|test)|npm (install|test))\"",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"if(!process.env.TMUX){console.error('[Hook] Consider running in tmux for session persistence');console.error('[Hook] tmux new -s dev  |  tmux attach -t dev')}\""
+            "command": "node -e \"console.error('[Hook] 长时间运行命令执行中...');console.error('[Hook] 提示: 考虑在新终端窗口运行，避免阻塞当前会话')\""
           }
         ],
-        "description": "Reminder to use tmux for long-running commands"
+        "description": "提醒长时间运行命令可在新终端执行"
       },
       {
         "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"console.error('[Hook] Review changes before push...');console.error('[Hook] Continuing with push (remove this hook to add interactive review)')\""
+            "command": "node -e \"console.error('[Hook] 推送前请确认变更...');console.error('[Hook] 继续执行推送 (移除此 hook 可添加交互式审查)')\""
           }
         ],
-        "description": "Reminder before git push to review changes"
+        "description": "Git 推送前提醒审查变更"
       },
       {
         "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(md|txt)$\" && !(tool_input.file_path matches \"README\\\\.md|CLAUDE\\\\.md|AGENTS\\\\.md|CONTRIBUTING\\\\.md\")",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&!/(README|CLAUDE|AGENTS|CONTRIBUTING)\\.md$/.test(p)){console.error('[Hook] BLOCKED: Unnecessary documentation file creation');console.error('[Hook] File: '+p);console.error('[Hook] Use README.md for documentation instead');process.exit(1)}console.log(d)})\""
+            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\\\.(md|txt)$/.test(p)&&!/(README|CLAUDE|AGENTS|CONTRIBUTING)\\\\.md$/.test(p)){console.error('[Hook] 阻止: 不必要的文档文件创建');console.error('[Hook] 文件: '+p);console.error('[Hook] 请使用 README.md 进行文档编写');process.exit(1)}console.log(d)})\""
           }
         ],
-        "description": "Block creation of random .md files - keeps docs consolidated"
+        "description": "阻止创建随机文档文件 - 保持文档统一"
       },
       {
         "matcher": "tool == \"Edit\" || tool == \"Write\"",
@@ -50,7 +50,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/suggest-compact.js\""
           }
         ],
-        "description": "Suggest manual compaction at logical intervals"
+        "description": "在逻辑时间点建议手动压缩上下文"
       }
     ],
     "PreCompact": [
@@ -62,7 +62,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact.js\""
           }
         ],
-        "description": "Save state before context compaction"
+        "description": "上下文压缩前保存状态"
       }
     ],
     "SessionStart": [
@@ -74,7 +74,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start.js\""
           }
         ],
-        "description": "Load previous context and detect package manager on new session"
+        "description": "新会话时加载历史上下文并检测包管理器"
       }
     ],
     "PostToolUse": [
@@ -83,52 +83,52 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const cmd=i.tool_input?.command||'';if(/gh pr create/.test(cmd)){const out=i.tool_output?.output||'';const m=out.match(/https:\\/\\/github.com\\/[^/]+\\/[^/]+\\/pull\\/\\d+/);if(m){console.error('[Hook] PR created: '+m[0]);const repo=m[0].replace(/https:\\/\\/github.com\\/([^/]+\\/[^/]+)\\/pull\\/\\d+/,'$1');const pr=m[0].replace(/.*\\/pull\\/(\\d+)/,'$1');console.error('[Hook] To review: gh pr review '+pr+' --repo '+repo)}}console.log(d)})\""
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const cmd=i.tool_input?.command||'';if(/gh pr create/.test(cmd)){const out=i.tool_output?.output||'';const m=out.match(/https:\\/\\/github.com\\/[^/]+\\/[^/]+\\/pull\\/\\d+/);if(m){console.error('[Hook] PR 已创建: '+m[0]);const repo=m[0].replace(/https:\\/\\/github.com\\/([^/]+\\/[^/]+)\\/pull\\/\\d+/,'$1');const pr=m[0].replace(/.*\\/pull\\/(\\d+)/,'$1');console.error('[Hook] 审阅命令: gh pr review '+pr+' --repo '+repo)}}console.log(d)})\""
           }
         ],
-        "description": "Log PR URL and provide review command after PR creation"
+        "description": "PR 创建后输出 URL 和审阅命令"
       },
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm run build|pnpm build|yarn build)\"",
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"(pnpm build|npm run build)\"",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.error('[Hook] Build completed - async analysis running in background');console.log(d)})\"",
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.error('[Hook] 构建完成 - 后台分析进行中');console.log(d)})\"",
             "async": true,
             "timeout": 30
           }
         ],
-        "description": "Example: async hook for build analysis (runs in background without blocking)"
+        "description": "构建完成异步提示（后台运行不阻塞）"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|vue)$\"",
         "hooks": [
           {
             "type": "command",
             "command": "node -e \"const{execFileSync}=require('child_process');const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){try{execFileSync('npx',['prettier','--write',p],{stdio:['pipe','pipe','pipe']})}catch(e){}}console.log(d)})\""
           }
         ],
-        "description": "Auto-format JS/TS files with Prettier after edits"
+        "description": "编辑 Vue/JS/TS 文件后自动 Prettier 格式化"
       },
       {
         "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const{execSync}=require('child_process');const fs=require('fs');const path=require('path');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){let dir=path.dirname(p);while(dir!==path.dirname(dir)&&!fs.existsSync(path.join(dir,'tsconfig.json'))){dir=path.dirname(dir)}if(fs.existsSync(path.join(dir,'tsconfig.json'))){try{const r=execSync('npx tsc --noEmit --pretty false 2>&1',{cwd:dir,encoding:'utf8',stdio:['pipe','pipe','pipe']});const lines=r.split('\\n').filter(l=>l.includes(p)).slice(0,10);if(lines.length)console.error(lines.join('\\n'))}catch(e){const lines=(e.stdout||'').split('\\n').filter(l=>l.includes(p)).slice(0,10);if(lines.length)console.error(lines.join('\\n'))}}}console.log(d)})\""
+            "command": "node -e \"const{execSync}=require('child_process');const fs=require('fs');const path=require('path');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){let dir=path.dirname(p);while(dir!==path.dirname(dir)&&!fs.existsSync(path.join(dir,'tsconfig.json'))){dir=path.dirname(dir)}if(fs.existsSync(path.join(dir,'tsconfig.json'))){try{const r=execSync('npx vue-tsc --noEmit --pretty false 2>&1',{cwd:dir,encoding:'utf8',stdio:['pipe','pipe','pipe']});const lines=r.split('\\\\n').filter(l=>l.includes(p)).slice(0,10);if(lines.length)console.error(lines.join('\\\\n'))}catch(e){const lines=(e.stdout||'').split('\\\\n').filter(l=>l.includes(p)).slice(0,10);if(lines.length)console.error(lines.join('\\\\n'))}}}console.log(d)})\""
           }
         ],
-        "description": "TypeScript check after editing .ts/.tsx files"
+        "description": "Vue3 TypeScript 文件编辑后使用 vue-tsc 类型检查"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|vue)$\"",
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){const c=fs.readFileSync(p,'utf8');const lines=c.split('\\n');const matches=[];lines.forEach((l,idx)=>{if(/console\\.log/.test(l))matches.push((idx+1)+': '+l.trim())});if(matches.length){console.error('[Hook] WARNING: console.log found in '+p);matches.slice(0,5).forEach(m=>console.error(m));console.error('[Hook] Remove console.log before committing')}}console.log(d)})\""
+            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){const c=fs.readFileSync(p,'utf8');const lines=c.split('\\\\n');const matches=[];lines.forEach((l,idx)=>{if(/console\\\\.log/.test(l))matches.push((idx+1)+': '+l.trim())});if(matches.length){console.error('[Hook] 警告: 在 '+p+' 中发现 console.log');matches.slice(0,5).forEach(m=>console.error(m));console.error('[Hook] 请在提交前移除 console.log')}}console.log(d)})\""
           }
         ],
-        "description": "Warn about console.log statements after edits"
+        "description": "Vue/JS/TS 文件编辑后警告 console.log 语句"
       }
     ],
     "Stop": [
@@ -140,7 +140,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/check-console-log.js\""
           }
         ],
-        "description": "Check for console.log in modified files after each response"
+        "description": "每次响应后检查修改文件中的 console.log"
       }
     ],
     "SessionEnd": [
@@ -152,7 +152,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-end.js\""
           }
         ],
-        "description": "Persist session state on end"
+        "description": "会话结束时保存状态"
       },
       {
         "matcher": "*",
@@ -162,7 +162,7 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/evaluate-session.js\""
           }
         ],
-        "description": "Evaluate session for extractable patterns"
+        "description": "评估会话，提取可复用的开发模式"
       }
     ]
   }
