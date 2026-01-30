@@ -23,7 +23,7 @@ You are an expert build error resolution specialist focused on fixing TypeScript
 ### Build & Type Checking Tools
 - **vue-tsc** - Vue TypeScript compiler for type checking (includes .ts files)
 - **tsc** - TypeScript compiler (alternative, but vue-tsc preferred for Vue projects)
-- **npm/yarn/pnpm** - Package management
+- **pnpm** - Package management (recommended for Windows + Vue3 projects)
 - **eslint** - Linting (can cause build failures)
 - **vite build** - Vite production build
 - **nuxt build** - Nuxt.js production build
@@ -49,13 +49,13 @@ npx tsc --noEmit
 npx eslint . --ext .ts,.vue,.js,.jsx
 
 # Vite build (production)
-npm run build
+pnpm build
 
 # Vite build with debug
-npm run build -- --debug
+pnpm build -- --debug
 
 # Nuxt.js build
-npm run build
+pnpm build
 ```
 
 ## Error Resolution Workflow
@@ -198,18 +198,18 @@ function getLength<T extends string | any[]>(item: T): number {
 }
 ```
 
-**Pattern 7: React Hook Errors**
+**Pattern 7: Vue Composition API Errors**
 ```typescript
-// ❌ ERROR: React Hook "useState" cannot be called in a function
+// ❌ ERROR: Cannot call hooks inside setup function
 function MyComponent() {
   if (condition) {
-    const [state, setState] = useState(0) // ERROR!
+    const state = ref(0) // ERROR! Called conditionally
   }
 }
 
-// ✅ FIX: Move hooks to top level
+// ✅ FIX: Always call hooks at top level
 function MyComponent() {
-  const [state, setState] = useState(0)
+  const state = ref(0)
 
   if (!condition) {
     return null
@@ -234,63 +234,66 @@ async function fetchData() {
 
 **Pattern 9: Module Not Found**
 ```typescript
-// ❌ ERROR: Cannot find module 'react' or its corresponding type declarations
-import React from 'react'
+// ❌ ERROR: Cannot find module 'vue' or its corresponding type declarations
+import { ref } from 'vue'
 
 // ✅ FIX: Install dependencies
-npm install react
-npm install --save-dev @types/react
+npm install vue
+npm install --save-dev @types/vue
 
 // ✅ CHECK: Verify package.json has dependency
 {
   "dependencies": {
-    "react": "^19.0.0"
+    "vue": "^3.4.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0"
+    "vue-tsc": "^1.8.0"
   }
 }
 ```
 
-**Pattern 10: Next.js Specific Errors**
+**Pattern 10: Vite/Vue Specific Errors**
 ```typescript
-// ❌ ERROR: Fast Refresh had to perform a full reload
-// Usually caused by exporting non-component
+// ❌ ERROR: Vue components should have a single root element
+// In Vue 3 templates, components must have a single root element
 
-// ✅ FIX: Separate exports
-// ❌ WRONG: file.tsx
-export const MyComponent = () => <div />
-export const someConstant = 42 // Causes full reload
+// ✅ FIX: Add a root element
+<template>
+  <div>
+    <header>My App</header>
+    <main>{{ content }}</main>
+  </div>
+</template>
 
-// ✅ CORRECT: component.tsx
-export const MyComponent = () => <div />
-
-// ✅ CORRECT: constants.ts
-export const someConstant = 42
+// ✅ OR: Use fragments (Vue 3.2+)
+<template>
+  <header>My App</header>
+  <main>{{ content }}</main>
+</template>
 ```
 
 ## Example Project-Specific Build Issues
 
-### Next.js 15 + React 19 Compatibility
+### Vue3 + TypeScript Compatibility
 ```typescript
-// ❌ ERROR: React 19 type changes
-import { FC } from 'react'
+// ❌ ERROR: Vue 3 type changes with generic components
+import { FC } from 'vue'
 
 interface Props {
-  children: React.ReactNode
+  items: string[]
 }
 
-const Component: FC<Props> = ({ children }) => {
-  return <div>{children}</div>
+const Component: FC<Props> = ({ items }) => {
+  return <div>{items}</div>
 }
 
-// ✅ FIX: React 19 doesn't need FC
+// ✅ FIX: Vue 3 doesn't need FC
 interface Props {
-  children: React.ReactNode
+  items: string[]
 }
 
-const Component = ({ children }: Props) => {
-  return <div>{children}</div>
+const Component = ({ items }: Props) => {
+  return <div>{items}</div>
 }
 ```
 
@@ -312,34 +315,6 @@ interface Market {
 const { data } = await supabase
   .from('markets')
   .select('*') as { data: Market[] | null, error: any }
-```
-
-### Redis Stack Types
-```typescript
-// ❌ ERROR: Property 'ft' does not exist on type 'RedisClientType'
-const results = await client.ft.search('idx:markets', query)
-
-// ✅ FIX: Use proper Redis Stack types
-import { createClient } from 'redis'
-
-const client = createClient({
-  url: process.env.REDIS_URL
-})
-
-await client.connect()
-
-// Type is inferred correctly now
-const results = await client.ft.search('idx:markets', query)
-```
-
-### Solana Web3.js Types
-```typescript
-// ❌ ERROR: Argument of type 'string' not assignable to 'PublicKey'
-const publicKey = wallet.address
-
-// ✅ FIX: Use PublicKey constructor
-import { PublicKey } from '@solana/web3.js'
-const publicKey = new PublicKey(wallet.address)
 ```
 
 ## Minimal Diff Strategy
@@ -500,31 +475,31 @@ Parameter 'market' implicitly has an 'any' type.
 # Check for errors (Vue3 projects)
 npx vue-tsc --noEmit
 
-# Build Vite project
-npm run build
+# Vite build
+pnpm build
 
 # Clear cache and rebuild
 rm -rf dist node_modules/.cache
-npm run build
+pnpm build
 
 # Check specific file
 npx vue-tsc --noEmit src/path/to/file.ts
 
 # Install missing dependencies
-npm install
+pnpm install
 
 # Fix ESLint issues automatically
 npx eslint . --fix
 
 # Update TypeScript
-npm install --save-dev typescript@latest
+pnpm add -D typescript@latest
 
 # Update Vue TypeScript plugin
-npm install --save-dev vue-tsc@latest
+pnpm add -D vue-tsc@latest
 
 # Verify node_modules
-rm -rf node_modules package-lock.json
-npm install
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
 ```
 
 ## Success Metrics

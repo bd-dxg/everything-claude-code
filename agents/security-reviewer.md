@@ -123,60 +123,40 @@ For each category, check:
     - Are alerts configured?
 ```
 
-### 3. Example Project-Specific Security Checks
+### 3. Vue3 + Frontend Security Checks
 
-**CRITICAL - Platform Handles Real Money:**
+**CRITICAL - Client-Side Security:**
 
 ```
-Financial Security:
-- [ ] All market trades are atomic transactions
-- [ ] Balance checks before any withdrawal/trade
-- [ ] Rate limiting on all financial endpoints
-- [ ] Audit logging for all money movements
-- [ ] Double-entry bookkeeping validation
-- [ ] Transaction signatures verified
-- [ ] No floating-point arithmetic for money
+Frontend Security:
+- [ ] All API calls use HTTPS
+- [ ] Sensitive data not stored in localStorage
+- [ ] XSS prevention with proper escaping
+- [ ] CSRF tokens for state-changing operations
+- [ ] Content Security Policy headers
+- [ ] No sensitive data in client-side logs
+- [ ] Environment variables properly prefixed with VITE_
 
-Solana/Blockchain Security:
-- [ ] Wallet signatures properly validated
-- [ ] Transaction instructions verified before sending
-- [ ] Private keys never logged or stored
-- [ ] RPC endpoints rate limited
-- [ ] Slippage protection on all trades
-- [ ] MEV protection considerations
-- [ ] Malicious instruction detection
+Vue3 Component Security:
+- [ ] Input validation on all forms
+- [ ] Sanitize user-generated content before display
+- [ ] Avoid v-html with user content
+- [ ] Proper CORS configuration for API calls
+- [ ] Rate limiting implemented on API endpoints
+- [ ] Authentication state properly managed
 
-Authentication Security:
-- [ ] Privy authentication properly implemented
-- [ ] JWT tokens validated on every request
-- [ ] Session management secure
-- [ ] No authentication bypass paths
-- [ ] Wallet signature verification
-- [ ] Rate limiting on auth endpoints
+API Security (Client-Side):
+- [ ] API keys not exposed in client code
+- [ ] JWT tokens stored securely (httpOnly cookies preferred)
+- [ ] Token refresh mechanism implemented
+- [ ] Proper error handling without exposing sensitive info
+- [ ] Request/Response validation
 
-Database Security (Supabase):
-- [ ] Row Level Security (RLS) enabled on all tables
-- [ ] No direct database access from client
-- [ ] Parameterized queries only
-- [ ] No PII in logs
-- [ ] Backup encryption enabled
-- [ ] Database credentials rotated regularly
-
-API Security:
-- [ ] All endpoints require authentication (except public)
-- [ ] Input validation on all parameters
-- [ ] Rate limiting per user/IP
-- [ ] CORS properly configured
-- [ ] No sensitive data in URLs
-- [ ] Proper HTTP methods (GET safe, POST/PUT/DELETE idempotent)
-
-Search Security (Redis + OpenAI):
-- [ ] Redis connection uses TLS
-- [ ] OpenAI API key server-side only
-- [ ] Search queries sanitized
-- [ ] No PII sent to OpenAI
-- [ ] Rate limiting on search endpoints
-- [ ] Redis AUTH enabled
+Dependency Security:
+- [ ] Regular npm audit checks
+- [ ] Keep Vue3 and Vite dependencies updated
+- [ ] Monitor for CVEs in frontend libraries
+- [ ] Use lockfile for consistent builds
 ```
 
 ## Vulnerability Patterns to Detect

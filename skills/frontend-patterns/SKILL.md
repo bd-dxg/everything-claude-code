@@ -1,90 +1,148 @@
 ---
 name: frontend-patterns
-description: Frontend development patterns for React, Next.js, state management, performance optimization, and UI best practices.
+description: Frontend development patterns for Vue3, Vite, TypeScript, state management, performance optimization, and UI best practices.
 ---
 
 # Frontend Development Patterns
 
-Modern frontend patterns for React, Next.js, and performant user interfaces.
+Modern frontend patterns for Vue3, Vite, and performant user interfaces.
 
 ## Component Patterns
 
 ### Composition Over Inheritance
 
-```typescript
-// ✅ GOOD: Component composition
-interface CardProps {
-  children: React.ReactNode
+```vue
+<!-- ✅ GOOD: Component composition with Vue3 -->
+<!-- Card.vue -->
+<template>
+  <div :class="['card', `card-${variant}`]">
+    <slot />
+  </div>
+</template>
+
+<script setup lang="ts">
+interface Props {
   variant?: 'default' | 'outlined'
 }
 
-export function Card({ children, variant = 'default' }: CardProps) {
-  return <div className={`card card-${variant}`}>{children}</div>
-}
+defineProps<Props>()
+</script>
 
-export function CardHeader({ children }: { children: React.ReactNode }) {
-  return <div className="card-header">{children}</div>
-}
+<!-- CardHeader.vue -->
+<template>
+  <div class="card-header">
+    <slot />
+  </div>
+</template>
 
-export function CardBody({ children }: { children: React.ReactNode }) {
-  return <div className="card-body">{children}</div>
-}
+<!-- CardBody.vue -->
+<template>
+  <div class="card-body">
+    <slot />
+  </div>
+</template>
 
-// Usage
-<Card>
-  <CardHeader>Title</CardHeader>
-  <CardBody>Content</CardBody>
-</Card>
+<!-- Usage in another component -->
+<template>
+  <Card>
+    <CardHeader>Title</CardHeader>
+    <CardBody>Content</CardBody>
+  </Card>
+</template>
+
+<script setup lang="ts">
+import Card from './Card.vue'
+import CardHeader from './CardHeader.vue'
+import CardBody from './CardBody.vue'
+</script>
 ```
 
-### Compound Components
+### Compound Components (Provide/Inject Pattern)
 
-```typescript
-interface TabsContextValue {
+```vue
+<!-- Tabs.vue -->
+<template>
+  <div class="tabs">
+    <slot />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, provide } from 'vue'
+
+interface TabsContext {
   activeTab: string
   setActiveTab: (tab: string) => void
 }
 
-const TabsContext = createContext<TabsContextValue | undefined>(undefined)
+const activeTab = ref(props.defaultTab)
 
-export function Tabs({ children, defaultTab }: {
-  children: React.ReactNode
+const setActiveTab = (tab: string) => {
+  activeTab.value = tab
+}
+
+provide<TabsContext>('tabs', { activeTab, setActiveTab })
+
+interface Props {
   defaultTab: string
-}) {
-  const [activeTab, setActiveTab] = useState(defaultTab)
-
-  return (
-    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      {children}
-    </TabsContext.Provider>
-  )
 }
 
-export function TabList({ children }: { children: React.ReactNode }) {
-  return <div className="tab-list">{children}</div>
+defineProps<Props>()
+</script>
+
+<!-- TabList.vue -->
+<template>
+  <div class="tab-list">
+    <slot />
+  </div>
+</template>
+
+<!-- Tab.vue -->
+<template>
+  <button
+    :class="{ active: isActive }"
+    @click="setActiveTab(id)"
+  >
+    <slot />
+  </button>
+</template>
+
+<script setup lang="ts">
+import { inject, computed } from 'vue'
+
+interface TabsContext {
+  activeTab: { value: string }
+  setActiveTab: (tab: string) => void
 }
 
-export function Tab({ id, children }: { id: string, children: React.ReactNode }) {
-  const context = useContext(TabsContext)
-  if (!context) throw new Error('Tab must be used within Tabs')
+const props = defineProps<{
+  id: string
+}>()
 
-  return (
-    <button
-      className={context.activeTab === id ? 'active' : ''}
-      onClick={() => context.setActiveTab(id)}
-    >
-      {children}
-    </button>
-  )
+const tabs = inject<TabsContext>('tabs')
+if (!tabs) {
+  throw new Error('Tab must be used within Tabs')
 }
 
-// Usage
-<Tabs defaultTab="overview">
-  <TabList>
-    <Tab id="overview">Overview</Tab>
-    <Tab id="details">Details</Tab>
-  </TabList>
-</Tabs>
+const isActive = computed(() => tabs.activeTab.value === props.id)
+const setActiveTab = tabs.setActiveTab
+</script>
+
+<!-- Usage -->
+<template>
+  <Tabs default-tab="overview">
+    <TabList>
+      <Tab id="overview">Overview</Tab>
+      <Tab id="details">Details</Tab>
+    </TabList>
+  </Tabs>
+</template>
+
+<script setup lang="ts">
+import Tabs from './Tabs.vue'
+import TabList from './TabList.vue'
+import Tab from './Tab.vue'
+</script>
 ```
 
 ### Render Props Pattern

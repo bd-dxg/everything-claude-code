@@ -118,6 +118,7 @@ const apiKey = process.env.API_KEY;  // ✓ Good
 - **Key Attributes**: Always add `:key` in `v-for` loops
 - **Conditional Rendering**: Prefer `v-if` over `v-show` for initial conditions, reverse for frequent toggles
 - **List Rendering**: Use `v-for` with proper key management
+- **TypeScript Integration**: Full type inference with generic components
 
 ### State Management
 - **Pinia Stores**: Use Pinia for global state, avoid prop drilling

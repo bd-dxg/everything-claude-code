@@ -93,19 +93,19 @@ For each design decision, document:
 - **Code Splitting**: Vite dynamic imports and route-level splitting
 - **Component TypeScript**: Full type inference with generic components
 
-### Backend Patterns
-- **Repository Pattern**: Abstract data access
-- **Service Layer**: Business logic separation
-- **Middleware Pattern**: Request/response processing
-- **Event-Driven Architecture**: Async operations
-- **CQRS**: Separate read and write operations
+### State Management Patterns
+- **Pinia Stores**: Type-safe global state management
+- **Composables Pattern**: Reusable logic with Vue Composition API
+- **Provide/Inject**: Dependency injection for component trees
+- **Event Bus**: Component communication (for simple cases)
+- **Store-to-Component Flow**: Clean data flow patterns
 
-### Data Patterns
-- **Normalized Database**: Reduce redundancy
-- **Denormalized for Read Performance**: Optimize queries
-- **Event Sourcing**: Audit trail and replayability
-- **Caching Layers**: Redis, CDN
-- **Eventual Consistency**: For distributed systems
+### Component Architecture Patterns
+- **Atomic Design**: Atoms, molecules, organisms, templates, pages
+- **Compound Components**: Flexible component composition
+- **Renderless Components**: Logic-only components
+- **Higher-Order Components**: Component wrappers
+- **Dynamic Components**: Vue `<component :is="">` patterns
 
 ## Vue3 + Vite Best Practices
 
@@ -115,6 +115,7 @@ For each design decision, document:
 - **Hot Module Replacement**: Fast HMR for rapid development
 - **Environment Variables**: Type-safe env configuration with Vite
 - **Alias Resolution**: Clean import paths with `@` alias
+- **PowerShell Compatibility**: Use cross-platform commands in package.json scripts
 
 ### Component Architecture
 - **Single File Components**: `<script setup>` with TypeScript
@@ -122,12 +123,14 @@ For each design decision, document:
 - **Props Validation**: Type-safe props with `defineProps<>()`
 - **Emit Types**: Type-safe events with `defineEmits<>()`
 - **Slots**: Flexible component composition patterns
+- **TypeScript Integration**: Full type inference with generic components
 
 ### State Management
 - **Pinia**: Official Vue state management with DevTools
 - **Composables Pattern**: Local state with `ref`/`reactive`
 - **Clean Data Flow**: Store to component patterns
 - **Persistence**: LocalStorage/sessionStorage integration
+- **Type Safety**: Full TypeScript support in stores
 
 ### Performance Optimization
 - **Lazy Loading**: Vite dynamic imports for routes/components
@@ -135,6 +138,7 @@ For each design decision, document:
 - **Image Optimization**: Vite image tools and CDN
 - **Bundle Analysis**: Rollup visualizer for optimization
 - **SSR/SSG**: Nuxt.js for SEO-critical applications
+- **Code Splitting**: Route-level and component-level splitting
 
 ## Architecture Decision Records (ADRs)
 
@@ -225,7 +229,7 @@ Example architecture for a modern Vue3 SaaS platform:
 - **State Management**: Pinia with persisted state
 - **Routing**: Vue Router 4 with lazy loading
 - **UI Framework**: Element Plus / Ant Design Vue / Custom Design System
-- **Backend**: Node.js + Express/Fastify (Railway/Render) or Go (for high performance)
+- **Backend**: Node.js + Express/Fastify (Railway/Render) - Windows + PowerShell compatible
 - **Database**: PostgreSQL (Supabase/Neon) or MongoDB (Atlas)
 - **Cache**: Redis (Upstash/Railway) for session/cache
 - **AI**: Claude API with structured output
@@ -260,7 +264,7 @@ Example architecture for a modern Vue3 SaaS platform:
 - **Vue DevTools**: Browser extension for debugging
 - **Pinia DevTools**: State management debugging
 - **TypeScript**: Full type safety
-- **ESLint + Prettier**: Code quality and formatting
+- **ESLint + Prettier**: Code quality and formatting (Windows-compatible)
 - **Stylelint**: CSS/SCSS linting
 
 #### Testing
@@ -274,7 +278,7 @@ Example architecture for a modern Vue3 SaaS platform:
 - **Netlify/Vercel**: Static hosting with CDN
 - **Cloudflare Pages**: Edge deployment
 - **Docker**: Containerized deployment
-- **Nginx**: Reverse proxy and caching
+- **PowerShell Scripts**: Windows-compatible build/deploy scripts
 
 #### Performance Monitoring
 - **Vite Bundle Analyzer**: Visualize bundle size
