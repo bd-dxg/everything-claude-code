@@ -21,33 +21,41 @@ You are an expert build error resolution specialist focused on fixing TypeScript
 ## Tools at Your Disposal
 
 ### Build & Type Checking Tools
-- **tsc** - TypeScript compiler for type checking
-- **npm/yarn** - Package management
+- **vue-tsc** - Vue TypeScript compiler for type checking (includes .ts files)
+- **tsc** - TypeScript compiler (alternative, but vue-tsc preferred for Vue projects)
+- **npm/yarn/pnpm** - Package management
 - **eslint** - Linting (can cause build failures)
-- **next build** - Next.js production build
+- **vite build** - Vite production build
+- **nuxt build** - Nuxt.js production build
 
 ### Diagnostic Commands
 ```bash
-# TypeScript type check (no emit)
-npx tsc --noEmit
+# Vue TypeScript type check (no emit) - RECOMMENDED for Vue3 projects
+npx vue-tsc --noEmit
 
-# TypeScript with pretty output
-npx tsc --noEmit --pretty
+# Vue TypeScript with pretty output
+npx vue-tsc --noEmit --pretty
 
 # Show all errors (don't stop at first)
-npx tsc --noEmit --pretty --incremental false
+npx vue-tsc --noEmit --pretty --incremental false
 
 # Check specific file
-npx tsc --noEmit path/to/file.ts
+npx vue-tsc --noEmit path/to/file.ts
+
+# Standard TypeScript check (alternative)
+npx tsc --noEmit
 
 # ESLint check
-npx eslint . --ext .ts,.tsx,.js,.jsx
+npx eslint . --ext .ts,.vue,.js,.jsx
 
-# Next.js build (production)
+# Vite build (production)
 npm run build
 
-# Next.js build with debug
+# Vite build with debug
 npm run build -- --debug
+
+# Nuxt.js build
+npm run build
 ```
 
 ## Error Resolution Workflow
@@ -55,7 +63,7 @@ npm run build -- --debug
 ### 1. Collect All Errors
 ```
 a) Run full type check
-   - npx tsc --noEmit --pretty
+   - npx vue-tsc --noEmit --pretty
    - Capture ALL errors, not just first
 
 b) Categorize errors by type
@@ -87,7 +95,7 @@ For each error:
    - Use type assertion (last resort)
 
 3. Verify fix doesn't break other code
-   - Run tsc again after each fix
+   - Run vue-tsc again after each fix
    - Check related files
    - Ensure no new errors introduced
 
@@ -428,8 +436,8 @@ Parameter 'market' implicitly has an 'any' type.
 
 ## Verification Steps
 
-1. ✅ TypeScript check passes: `npx tsc --noEmit`
-2. ✅ Next.js build succeeds: `npm run build`
+1. ✅ TypeScript check passes: `npx vue-tsc --noEmit`
+2. ✅ Vite build succeeds: `npm run build`
 3. ✅ ESLint check passes: `npx eslint .`
 4. ✅ No new errors introduced
 5. ✅ Development server runs: `npm run dev`
@@ -489,18 +497,18 @@ Parameter 'market' implicitly has an 'any' type.
 ## Quick Reference Commands
 
 ```bash
-# Check for errors
-npx tsc --noEmit
+# Check for errors (Vue3 projects)
+npx vue-tsc --noEmit
 
-# Build Next.js
+# Build Vite project
 npm run build
 
 # Clear cache and rebuild
-rm -rf .next node_modules/.cache
+rm -rf dist node_modules/.cache
 npm run build
 
 # Check specific file
-npx tsc --noEmit src/path/to/file.ts
+npx vue-tsc --noEmit src/path/to/file.ts
 
 # Install missing dependencies
 npm install
@@ -511,6 +519,9 @@ npx eslint . --fix
 # Update TypeScript
 npm install --save-dev typescript@latest
 
+# Update Vue TypeScript plugin
+npm install --save-dev vue-tsc@latest
+
 # Verify node_modules
 rm -rf node_modules package-lock.json
 npm install
@@ -519,7 +530,7 @@ npm install
 ## Success Metrics
 
 After build error resolution:
-- ✅ `npx tsc --noEmit` exits with code 0
+- ✅ `npx vue-tsc --noEmit` exits with code 0
 - ✅ `npm run build` completes successfully
 - ✅ No new errors introduced
 - ✅ Minimal lines changed (< 5% of affected file)
