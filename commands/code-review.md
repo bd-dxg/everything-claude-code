@@ -16,7 +16,7 @@ Comprehensive security and quality review of uncommitted changes:
 
 **Code Quality (HIGH):**
 - Functions > 50 lines
-- Files > 800 lines
+- Files > 300 lines
 - Nesting depth > 4 levels
 - Missing error handling
 - console.log statements

@@ -24,7 +24,7 @@ function updateUser(user, name) {
 
 MANY SMALL FILES > FEW LARGE FILES:
 - High cohesion, low coupling
-- 200-400 lines typical, 800 max
+- 300 lines typical
 - Extract utilities from large components
 - Organize by feature/domain, not by type
 
@@ -62,7 +62,7 @@ const validated = schema.parse(input)
 Before marking work complete:
 - [ ] Code is readable and well-named
 - [ ] Functions are small (<50 lines)
-- [ ] Files are focused (<800 lines)
+- [ ] Files are focused (<300 lines)
 - [ ] No deep nesting (>4 levels)
 - [ ] Proper error handling
 - [ ] No console.log statements
